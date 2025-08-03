@@ -1,0 +1,49 @@
+name: Build React UI
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout UI
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'  # UI requires Node 22+
+      
+      - name: Checkout Invoice Ninja for vite config
+        uses: actions/checkout@v4
+        with:
+          repository: jacksongriggs/invoiceninja
+          ref: v5-stable
+          path: invoiceninja
+          sparse-checkout: |
+            vite.config.ts.react
+      
+      - name: Prepare environment
+        run: |
+          sed -i 's/VITE_IS_TEST=true/VITE_IS_TEST=false/' .env.example
+          echo "VITE_PUSHER_APP_KEY=f0111a02782708da651f" >> .env.example
+          cp .env.example .env
+          cp invoiceninja/vite.config.ts.react vite.config.js
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build
+        run: NODE_OPTIONS="--max-old-space-size=8192" npm run build
+      
+      - name: Commit built files
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add -f dist/  # Force add dist (usually in .gitignore)
+          git commit -m "Build React UI [skip ci]" || echo "No changes to commit"
+          git push origin develop
