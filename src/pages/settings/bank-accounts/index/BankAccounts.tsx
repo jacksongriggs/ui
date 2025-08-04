@@ -68,7 +68,7 @@ export function BankAccounts() {
         linkToEdit="/settings/bank_accounts/:id/edit"
         withResourcefulActions
         rightSide={
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 items-center flex-nowrap">
             <ConnectAccounts />
 
             {((isHosted() && enterprisePlan()) || isSelfHosted()) && (
@@ -76,6 +76,7 @@ export function BankAccounts() {
                 type="secondary"
                 behavior="button"
                 onClick={handleRefresh}
+                className="flex-shrink-0"
               >
                 <span className="mr-2">
                   {<Icon element={MdRefresh} size={20} />}
@@ -91,6 +92,7 @@ export function BankAccounts() {
                 onClick={() =>
                   navigate('/settings/bank_accounts/transaction_rules')
                 }
+                className="flex-shrink-0"
               >
                 <span className="mr-2">
                   {<Icon element={MdRuleFolder} size={20} />}

@@ -100,6 +100,7 @@ export function ConnectAccounts() {
       <Button
         type="secondary"
         onClick={() => setIsModalVisible(true)}
+        className="flex-shrink-0"
       >
         <span className="mr-2">{<Icon element={MdLink} size={20} />}</span>
         {t('connect_accounts')}
