@@ -71,7 +71,7 @@ export function BankAccounts() {
           <div className="flex space-x-2">
             <ConnectAccounts />
 
-            {isHosted() && enterprisePlan() && (
+            {((isHosted() && enterprisePlan()) || isSelfHosted()) && (
               <Button
                 type="secondary"
                 behavior="button"

@@ -23,6 +23,7 @@ import { useAccentColor } from '$app/common/hooks/useAccentColor';
 import { useClickAway } from 'react-use';
 import { useColorScheme } from '$app/common/colors';
 import { enterprisePlan } from '$app/common/guards/guards/enterprise-plan';
+import { ConnectUpBank } from './ConnectUpBank';
 
 export function ConnectAccounts() {
   const [t] = useTranslation();
@@ -32,8 +33,9 @@ export function ConnectAccounts() {
 
   const divRef = useRef<HTMLDivElement>(null);
 
-  const [account, setAccount] = useState<'yodlee' | 'nordigen'>();
+  const [account, setAccount] = useState<'yodlee' | 'nordigen' | 'upbank'>();
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [showUpBankModal, setShowUpBankModal] = useState<boolean>(false);
 
   useClickAway(divRef, () => {
     setAccount(undefined);
@@ -74,6 +76,11 @@ export function ConnectAccounts() {
     });
   };
 
+  const handleConnectUpBank = () => {
+    handleClose();
+    setShowUpBankModal(true);
+  };
+
   const handleConnectAccount = () => {
     if (account === 'yodlee') {
       handleConnectYodlee();
@@ -82,15 +89,17 @@ export function ConnectAccounts() {
     if (account === 'nordigen') {
       handleConnectNordigen();
     }
+
+    if (account === 'upbank') {
+      handleConnectUpBank();
+    }
   };
 
   return (
     <>
       <Button
         type="secondary"
-        onClick={() =>
-          isSelfHosted() ? handleConnectNordigen() : setIsModalVisible(true)
-        }
+        onClick={() => setIsModalVisible(true)}
       >
         <span className="mr-2">{<Icon element={MdLink} size={20} />}</span>
         {t('connect_accounts')}
@@ -161,6 +170,41 @@ export function ConnectAccounts() {
             </div>
           )}
 
+          {/* UP Bank Option - Available for Australian users */}
+          <div
+            data-cy="upbankBox"
+            className="flex flex-col items-center cursor-pointer border-4"
+            style={{
+              borderColor: account === 'upbank' ? accentColor : colors.$5,
+              height: '10.25rem',
+            }}
+            onClick={() => setAccount('upbank')}
+          >
+            <div className="flex flex-1 items-center justify-center">
+              <div className="flex flex-col items-center">
+                <div className="text-4xl font-bold" style={{ color: '#FF7A64' }}>
+                  UP
+                </div>
+                <div className="text-sm text-gray-600">Bank</div>
+              </div>
+            </div>
+
+            <div
+              className="flex items-center justify-center space-x-2 text-xs pb-3"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <p className="text-gray-500">Australia only - Personal Access Token required.</p>
+
+              <Link
+                className="text-xs"
+                to="https://up.com.au/api/"
+                external
+              >
+                {t('learn_more')}.
+              </Link>
+            </div>
+          </div>
+
           <Button
             onClick={handleConnectAccount}
             disableWithoutIcon
@@ -170,6 +214,12 @@ export function ConnectAccounts() {
           </Button>
         </div>
       </Modal>
+
+      {/* UP Bank Connection Modal */}
+      <ConnectUpBank
+        visible={showUpBankModal}
+        onClose={() => setShowUpBankModal(false)}
+      />
     </>
   );
 }
