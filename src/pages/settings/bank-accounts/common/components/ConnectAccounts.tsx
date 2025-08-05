@@ -112,7 +112,7 @@ export function ConnectAccounts() {
         onClose={handleClose}
       >
         <div ref={divRef} className="flex flex-col space-y-6">
-          {enterprisePlan() && (
+          {(enterprisePlan() || isSelfHosted()) && (
             <div
               className="flex flex-col cursor-pointer border-4"
               style={{
@@ -140,7 +140,7 @@ export function ConnectAccounts() {
             </div>
           )}
 
-          {enterprisePlan() && (
+          {(enterprisePlan() || isSelfHosted()) && (
             <div
               data-cy="nordigenBox"
               className="flex flex-col items-center cursor-pointer border-4"
